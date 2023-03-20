@@ -12,10 +12,9 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          F10 Bet
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
