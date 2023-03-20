@@ -24,17 +24,19 @@ import { defineComponent } from 'vue'
 import { api } from 'src/boot/axios'
 import { useRoute } from 'vue-router';
 import { db } from 'src/firebaseConfig'
-import { collection, query, where, getDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDoc, doc, getDocs } from "firebase/firestore";
 
 export default defineComponent({
     name: 'IndexPage',
 
     async setup() {
-        const route = useRoute()
-        const game = doc(db, "group", 'Ws4u3cABHxkPDYHOA7IK')
-        const gameSnap = await getDoc(game);
-        console.log(gameSnap.data())
-        // const q = query(collection(db, "user"), where("capital", "==", true));
+        // const route = useRoute()
+        // const game = doc(db, "group", 'Ws4u3cABHxkPDYHOA7IK')
+        // const gameSnap = await getDoc(game);
+        // console.log(gameSnap.data().users[0])
+        // const q = query(collection(db, "user"), where("id", "==", gameSnap.data().users[0]));
+        // const qSnap = await getDocs(q)
+        // console.log(qSnap.data())
 
         // const querySnapshot = await getDocs(q);
         // querySnapshot.forEach((doc) => {
