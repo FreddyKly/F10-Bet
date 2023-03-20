@@ -10,10 +10,7 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-
-        <q-toolbar-title>
-          F10 Bet
-        </q-toolbar-title>
+        <img src="~assets/F1_white.png" style="width: 50px; height: 20px">
 
       </q-toolbar>
     </q-header>
