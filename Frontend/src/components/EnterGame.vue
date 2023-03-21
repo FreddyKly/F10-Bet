@@ -55,6 +55,7 @@ export default defineComponent({
         var join = ref(false)
         var invalidGameID = ref(false)
         var gameID = ref('')
+        const router = useRouter()
         const auth = getAuth()
         console.log(auth.currentUser)
 
@@ -68,7 +69,7 @@ export default defineComponent({
                 total_points: 0,
                 username: auth.currentUser.displayName,
             })
-            router.push('/rankings')
+            router.push('/ranking')
         }
 
         async function joinGame() {

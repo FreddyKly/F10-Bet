@@ -10,6 +10,8 @@
   import { defineComponent } from 'vue'
   import Standings from 'src/components/Standings.vue'
   import { getAuth, GoogleAuthProvider, signInWithPopup, browserLocalPersistence, setPersistence } from 'firebase/auth'
+  import { doc, getDoc } from 'firebase/firestore'
+  import { db } from 'src/firebaseConfig'
   import { useRouter } from 'vue-router';
   
   export default defineComponent({
@@ -18,11 +20,13 @@
     async setup() {
       const router = useRouter()
       const auth = getAuth()
+      console.log(auth.currentUser)
       if(auth.currentUser !== null) {
-        const game = doc(db, "user", auth.currentUser.uid)
-        const gameSnap = await getDoc(game);
-        if (gameSnap.exists()) {
-            router.push('/rankings')
+        console.log('User is logged in')
+        const user = doc(db, "user", auth.currentUser.uid)
+        const userSnap = await getDoc(user);
+        if (userSnap.exists()) {
+            router.push('/ranking')
         } else {
             router.push('/game')
         }
