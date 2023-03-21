@@ -5,11 +5,15 @@
                 <h5 style="margin: 5px">
                     Standing:
                 </h5>
-
             </div>
-            <div v-for="index in 3" :key="index" class="col flex justify-center">
+            <div v-for="user in users" :key="user" class="col flex justify-center">
                 <q-card class="q-ma-md" style="height: 15vh; width: 80vw;">
-                    {{ index }}
+                    <h4 style="margin: 3px">
+                        {{ user.username }}
+                    </h4>
+                    <h5 style="margin: 3px;">
+                        Total Points: {{ user.total_points }}
+                    </h5>
                 </q-card>
             </div>
             <div class="col flex justify-center q-mt-md">
@@ -20,7 +24,7 @@
 </template>
   
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { api } from 'src/boot/axios'
 import { useRoute } from 'vue-router';
 import { db } from 'src/firebaseConfig'
@@ -35,6 +39,7 @@ export default defineComponent({
         const route = useRoute()
         const auth = getAuth()
         const gameStore = useGameStore()
+        const users = ref([])
 
         console.log(auth.currentUser, 'GameID:', gameStore.gameID)
         const userQ = query(collection(db, "user"), where("game_id", "==", gameStore.gameID));
@@ -42,9 +47,11 @@ export default defineComponent({
         userSnap.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             console.log('userID: ', doc.id, " => ", doc.data());
+            users.value.push(doc.data())
         });
+        console.log(users.value[0])
 
-        return {}
+        return {users}
     }
 })
 </script>
