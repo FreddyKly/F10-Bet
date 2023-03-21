@@ -83,13 +83,13 @@ export default defineComponent({
                 await setDoc(doc(db, "user", auth.currentUser.uid), {
                     e_mail: auth.currentUser.email,
                     google_id: auth.currentUser.uid,
-                    game_id: 'g' + gameID.value,
+                    game_id: gameID.value,
                     guesses: [],
                     total_points: 0,
                     username: auth.currentUser.displayName,
                 })
                 join.value = false
-                router.push('/rankings')
+                router.push('/ranking')
             } else {
                 console.log('didnt exist')
                 invalidGameID.value = true
