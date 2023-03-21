@@ -45,10 +45,14 @@
                 const user = doc(db, "user", auth.currentUser.uid)
                 const userSnap = await getDoc(user);
                 if (userSnap.exists()) {
+                    console.log('Login worked for user: ', userSnap, '. The users gameID is: ', userSnap.data().game_id)
+                    gameStore.gameID = userSnap.data().game_id
                     router.push('/ranking')
+                } else {
+                    router.push('/game')
+                    console.log(auth.currentUser)
                 }
-                router.push('/game')
-                console.log(auth.currentUser)
+                
               })
               .catch((error) => {
                 alert('login did not work')

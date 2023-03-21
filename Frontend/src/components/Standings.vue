@@ -41,7 +41,7 @@ export default defineComponent({
         const userSnap = await getDocs(userQ);
         userSnap.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
+            console.log('userID: ', doc.id, " => ", doc.data());
         });
 
         return {}
