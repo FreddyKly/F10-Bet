@@ -5,7 +5,7 @@
     <q-header>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <img src="~assets/F1_white.png" style="width: 50px; height: 20px" v-on:click="$router.push('/')">
+        <img src="~assets/F1_white.png" style="width: 50px; height: 20px" v-on:click="$router.push('/ranking')">
         <q-space></q-space>
         <q-btn flat dense round label="logout" @click="logOut()" />
       </q-toolbar>

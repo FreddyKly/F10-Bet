@@ -7,13 +7,13 @@
                 </h5>
             </div>
             <div v-for="user in users" :key="user" class="col flex justify-center">
-                <q-card class="q-ma-md" style="height: 15vh; width: 80vw;">
-                    <h4 style="margin: 3px">
+                <q-card class="q-ma-md" style="height: 15vh; width: 80vw;" v-on:click="$router.push(`/user/${user.google_id}`)">
+                    <h5 style="margin: 3px">
                         {{ user.username }}
-                    </h4>
-                    <h5 style="margin: 3px;">
-                        Total Points: {{ user.total_points }}
                     </h5>
+                    <h6 style="margin: 3px;">
+                        Total Points: {{ user.total_points }}
+                    </h6>
                 </q-card>
             </div>
             <div class="col flex justify-center q-mt-md">
@@ -50,6 +50,9 @@ export default defineComponent({
             users.value.push(doc.data())
         });
         console.log(users.value[0])
+
+        // Update user data
+        
 
         return {users}
     }
