@@ -1,39 +1,26 @@
 <template>
   <q-page>
-    <div class="fixed-center">
-      <q-btn color="primary" label="Login" size="2rem" icon="login" v-on:click="signInWithGoogle()"/>
-    </div>
+    <suspense>
+        <template #fallback>
+          Loading...
+        </template>
+        <Login></Login>
+    </suspense>
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
-import Standings from 'src/components/Standings.vue'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { useRouter } from 'vue-router';
+import Login from 'src/components/Login.vue'
 
 export default defineComponent({
   name: 'IndexPage',
+  components: {Login},
+  
 
   setup() {
-    const router = useRouter()
-    const auth = getAuth()
-    console.log(auth.currentUser)
 
-    function signInWithGoogle () {
-      const provider = new GoogleAuthProvider()
-      signInWithPopup(getAuth(), provider)
-      .then((result) => {
-        console.log(result.user)
-        router.push('/1/ranking')
-        console.log(auth.currentUser)
-      })
-      .catch((error) => {
-
-      })
-    }
-
-    return { signInWithGoogle }
+    return {  }
   }
 })
 </script>

@@ -10,31 +10,38 @@ const routes = [
     ]
   },
   {
-    path: '/:Gid/ranking',
+    path: '/ranking',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/RankingsPage.vue') }
     ]
   },
   {
-    path: '/:Gid/bet',
+    path: '/bet',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/BetPage.vue') }
     ]
   },
   {
-    path: '/:Gid/betDetails',
+    path: '/betDetails',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/DetailsBetPage.vue') }
     ]
   },
   {
-    path: '/:Gid/setting',
+    path: '/setting',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/GameSettingsPage.vue') }
+    ]
+  },
+  {
+    path: '/game',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/EnterGamePage.vue') }
     ]
   },
 
