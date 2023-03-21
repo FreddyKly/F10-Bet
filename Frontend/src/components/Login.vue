@@ -13,6 +13,7 @@
   import { doc, getDoc } from 'firebase/firestore'
   import { db } from 'src/firebaseConfig'
   import { useRouter } from 'vue-router';
+  import { useGameStore } from 'src/stores/gameStore'
   
   export default defineComponent({
     name: 'LoginComp',
@@ -21,11 +22,14 @@
       const router = useRouter()
       const auth = getAuth()
       console.log(auth.currentUser)
+      const gameStore = useGameStore()
       if(auth.currentUser !== null) {
         console.log('User is logged in')
         const user = doc(db, "user", auth.currentUser.uid)
         const userSnap = await getDoc(user);
+        console.log(userSnap.data().game_id)
         if (userSnap.exists()) {
+            gameStore.gameID = userSnap.data().game_id
             router.push('/ranking')
         } else {
             router.push('/game')
@@ -37,8 +41,12 @@
         setPersistence(auth, browserLocalPersistence)
           .then(() => {
             return signInWithPopup(getAuth(), provider)
-              .then((result) => {
-                console.log(result.user)
+              .then(async () => {
+                const user = doc(db, "user", auth.currentUser.uid)
+                const userSnap = await getDoc(user);
+                if (userSnap.exists()) {
+                    router.push('/ranking')
+                }
                 router.push('/game')
                 console.log(auth.currentUser)
               })

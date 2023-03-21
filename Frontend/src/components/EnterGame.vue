@@ -45,7 +45,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { setDoc, doc, query, collection, where, getDocs } from 'firebase/firestore'
 import { useRouter } from 'vue-router';
 import { db } from 'src/firebaseConfig'
-import router from 'src/router';
+import { useGameStore } from 'src/stores/gameStore';
 
 export default defineComponent({
     name: 'EnterGameComponent',
@@ -55,6 +55,8 @@ export default defineComponent({
         var join = ref(false)
         var invalidGameID = ref(false)
         var gameID = ref('')
+
+        const gameStore = useGameStore()
         const router = useRouter()
         const auth = getAuth()
         console.log(auth.currentUser)
@@ -69,6 +71,7 @@ export default defineComponent({
                 total_points: 0,
                 username: auth.currentUser.displayName,
             })
+            gameStore.gameID = 'g' + auth.currentUser.uid
             router.push('/ranking')
         }
 
@@ -89,6 +92,7 @@ export default defineComponent({
                     username: auth.currentUser.displayName,
                 })
                 join.value = false
+                gameStore.gameID = gameID.value
                 router.push('/ranking')
             } else {
                 console.log('didnt exist')

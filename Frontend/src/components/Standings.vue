@@ -24,26 +24,25 @@ import { defineComponent } from 'vue'
 import { api } from 'src/boot/axios'
 import { useRoute } from 'vue-router';
 import { db } from 'src/firebaseConfig'
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { collection, query, where, getDoc, doc, getDocs } from "firebase/firestore";
+import { useGameStore } from 'src/stores/gameStore';
 
 export default defineComponent({
-    name: 'IndexPage',
+    name: 'StandingComp',
 
     async setup() {
-        // const route = useRoute()
-        // const game = doc(db, "group", 'Ws4u3cABHxkPDYHOA7IK')
-        // const gameSnap = await getDoc(game);
-        // console.log(gameSnap.data().users[0])
-        // const q = query(collection(db, "user"), where("id", "==", gameSnap.data().users[0]));
-        // const qSnap = await getDocs(q)
-        // console.log(qSnap.data())
+        const route = useRoute()
+        const auth = getAuth()
+        const gameStore = useGameStore()
 
-        // const querySnapshot = await getDocs(q);
-        // querySnapshot.forEach((doc) => {
-        //   // doc.data() is never undefined for query doc snapshots
-        //   console.log(doc.id, " => ", doc.data());
-        // });
-
+        console.log(auth.currentUser, 'GameID:', gameStore.gameID)
+        const userQ = query(collection(db, "user"), where("game_id", "==", gameStore.gameID));
+        const userSnap = await getDocs(userQ);
+        userSnap.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data());
+        });
 
         return {}
     }

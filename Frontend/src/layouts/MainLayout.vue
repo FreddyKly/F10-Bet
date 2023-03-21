@@ -1,37 +1,23 @@
-<template>
+<template>alerttoolbaralerttoolbar
+
+
   <q-layout view="lHh Lpr lFf">
     <q-header>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-        <img src="~assets/F1_white.png" style="width: 50px; height: 20px">
-
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <img src="~assets/F1_white.png" style="width: 50px; height: 20px" v-on:click="$router.push('/')">
+        <q-space></q-space>
+        <q-btn flat dense round label="logout" @click="logOut()" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label
-          header
-        >
+        <q-item-label header>
           Essential Links
         </q-item-label>
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link" />
       </q-list>
     </q-drawer>
 
@@ -44,50 +30,10 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter } from 'vue-router';
 
 const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
 ]
 
 export default defineComponent({
@@ -97,13 +43,26 @@ export default defineComponent({
     EssentialLink
   },
 
-  setup () {
+  setup() {
+    const auth = getAuth();
+    const router = useRouter()
+
+    function logOut() {
+      signOut(auth).then(() => {
+        console.log('logout worked')
+        router.push('/')
+      }).catch((error) => {
+        console.log('logout didnt worked')
+      });
+    }
+
     const leftDrawerOpen = ref(false)
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
-      toggleLeftDrawer () {
+      logOut,
+      toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
     }
