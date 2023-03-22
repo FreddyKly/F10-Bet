@@ -2,15 +2,15 @@
   <div class="column">
     <div style="width: 80vw;">
       <q-card>
-        <h5 style="margin: 3px">
+        <h5 style="margin: 3px; margin-left: 5px;">
           {{ user.username }}
         </h5>
-        <h6 style="margin: 3px;">
+        <h6 style="margin: 3px; margin-left: 5px;">
           Total Points: {{ user.total_points }}
         </h6>
       </q-card>
     </div>
-    <h5>
+    <h5 class="q-ml-sm">
       Race Results:
     </h5>
     <div v-for="(result, idx) in f1Results" :key="result" class="flex justify-center">
@@ -21,7 +21,7 @@
           Guess: {{ user.guesses[idx].guess }}
         </h6>
         <h6 class="q-my-md">
-          10<sup>th</sup>: {{ result.Results[9].Driver.familyName}}
+          10<sup>th</sup>: {{ result.Results[9].Driver.familyName }}
         </h6>
         <h6 class="q-my-md">
           Points: {{ user.guesses[idx].points }}
@@ -59,7 +59,7 @@ export default defineComponent({
     const userSnap = await getDoc(userDoc);
     user.value = userSnap.data()
     console.log(userSnap.data())
-    console.log(f1Results.value)
+    console.log('f1Results: ', f1Results.value)
 
     return { user, f1Results }
   }
