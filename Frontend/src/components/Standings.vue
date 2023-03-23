@@ -18,7 +18,7 @@
                 </q-card>
             </div>
             <div class="col flex justify-center q-mt-md">
-                <q-btn color="primary" size="1.5em" icon="payments" label="Bet" @click="$router.push()" />
+                <q-btn color="primary" size="1.5em" icon="payments" label="Bet" @click="$router.push('/Bet')" />
             </div>
         </div>
     </div>

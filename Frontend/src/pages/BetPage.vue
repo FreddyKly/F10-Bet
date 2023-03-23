@@ -1,16 +1,25 @@
 <template>
-    <q-page class="flex items-start">
-        <div>
-            Predict 10th place for the next race:
-        </div>
-    </q-page>
-  </template>
-  
-  <script>
-  import { defineComponent } from 'vue'
-  
-  export default defineComponent({
-    name: 'IndexPage'
-  })
-  </script>
-  
+  <q-page>
+    <suspense>
+        <template #fallback>
+          Loading...
+        </template>
+        <Bet></Bet>
+    </suspense>
+  </q-page>
+</template>
+
+<script>
+import { defineComponent } from 'vue'
+import Bet from 'src/components/Bet.vue'
+
+export default defineComponent({
+  name: 'BetPage',
+  components: { Bet },
+
+  setup () {
+
+    return {  }
+  }
+})
+</script>
