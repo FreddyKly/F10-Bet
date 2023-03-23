@@ -1,47 +1,44 @@
-<template>alerttoolbaralerttoolbar
-
-
+<template>
   <q-layout view="lHh Lpr lFf">
     <q-header>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
         <img src="~assets/F1_white.png" style="width: 50px; height: 20px" v-on:click="$router.push('/ranking')">
         <q-space></q-space>
+        <q-btn v-if="gameID != ''" class="q-mr-md" flat dense round icon="share" v-on:click="sharePressed"></q-btn>
         <q-btn flat dense round label="logout" @click="logOut()" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header>
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link" />
-      </q-list>
-    </q-drawer>
-
     <q-page-container>
+      <q-dialog v-model="share">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Group-ID:</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            {{ gameID }}
+          </q-card-section>
+
+          <q-card-actions>
+            <q-btn flat label="OK" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { defineComponent, ref, watchEffect } from 'vue'
+
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from 'vue-router';
-
-const linksList = [
-]
+import { useGameStore } from 'src/stores/gameStore';
 
 export default defineComponent({
   name: 'MainLayout',
-
-  components: {
-    EssentialLink
-  },
 
   setup() {
     const auth = getAuth();
@@ -56,14 +53,25 @@ export default defineComponent({
       });
     }
 
-    const leftDrawerOpen = ref(false)
+    const gameStore = useGameStore()
+    const share = ref(false)
+
+    var gameID = ref(gameStore.gameID)
+    // eslint-disable-next-line vue/no-watch-after-await
+    watchEffect(async () => {
+      if (gameStore.gameID != '') {
+        gameID.value = gameStore.gameID
+        console.log(gameStore.gameID, 'share: ', share.value)
+
+      }
+    })
 
     return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
       logOut,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value
+      gameID,
+      share,
+      sharePressed() {
+        share.value = !share.value
       }
     }
   }

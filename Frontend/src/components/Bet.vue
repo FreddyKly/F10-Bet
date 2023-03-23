@@ -32,7 +32,7 @@ export default defineComponent({
     async setup() {
         const auth = getAuth()
         const gameStore = useGameStore()
-        var guess = ref('')
+        
         const f1ResponseNextRace = await api.get('http://ergast.com/api/f1/current/next.json')
         const f1ResponseDrivers = await api.get('http://ergast.com/api/f1/current/drivers.json')
         const f1NextRace = f1ResponseNextRace.data.MRData.RaceTable.Races[0].raceName
@@ -45,6 +45,7 @@ export default defineComponent({
 
         const userDoc = doc(db, "user", auth.currentUser.uid)
         const userSnap = await getDoc(userDoc);
+        var guess = ref(userSnap.data().guesses[f1Round - 1].guess)
 
 
         // eslint-disable-next-line vue/no-watch-after-await
