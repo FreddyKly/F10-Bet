@@ -75,10 +75,14 @@ export default defineComponent({
             for (let raceIdx = 0; raceIdx < racePositions.length; raceIdx++) {
                 console.log(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess))
                 let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess) - 10)
-                newGuesses[raceIdx].points = posDifPoints[posError]
-                newTotPoints += posDifPoints[posError]
+                console.log(posError)
+                if(posError <= 10 ) {
+                    newGuesses[raceIdx].points = posDifPoints[posError]
+                    newTotPoints += posDifPoints[posError]
+                }
             }
             var userRef = doc(db, 'user', users.value[userIdx].google_id)
+            console.log('new Guesses: ', newGuesses, 'new Total Points: ', newTotPoints)
             await updateDoc(userRef, {
                 guesses: newGuesses,
                 total_points: newTotPoints
