@@ -18,6 +18,7 @@
 
           <q-card-section class="q-pt-none">
             {{ gameID }}
+            <q-btn flat icon="content_copy" v-on:click="copy()"></q-btn>
           </q-card-section>
 
           <q-card-actions>
@@ -36,6 +37,7 @@ import { defineComponent, ref, watchEffect } from 'vue'
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from 'vue-router';
 import { useGameStore } from 'src/stores/gameStore';
+import { copyToClipboard } from 'quasar'
 
 export default defineComponent({
   name: 'MainLayout',
@@ -57,6 +59,17 @@ export default defineComponent({
     const share = ref(false)
 
     var gameID = ref(gameStore.gameID)
+
+    function copy() {
+      copyToClipboard(gameID.value)
+        .then(() => {
+          console.log('copy worked')
+        })
+        .catch(() => {
+          console.log('copy did not work')
+        })
+    }
+
     // eslint-disable-next-line vue/no-watch-after-await
     watchEffect(async () => {
       if (gameStore.gameID != '') {
@@ -68,6 +81,7 @@ export default defineComponent({
 
     return {
       logOut,
+      copy,
       gameID,
       share,
       sharePressed() {
