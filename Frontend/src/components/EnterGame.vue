@@ -63,7 +63,7 @@ export default defineComponent({
         console.log(auth.currentUser)
 
         async function initializeGuesses() {
-            const f1Response = await api.get('http://ergast.com/api/f1/current.json')
+            const f1Response = await api.get('https://ergast.com/api/f1/current.json')
             const locations = f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
             console.log(locations)
             var guesses = []

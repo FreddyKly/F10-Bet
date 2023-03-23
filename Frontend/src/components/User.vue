@@ -51,7 +51,7 @@ export default defineComponent({
     const auth = getAuth()
     const gameStore = useGameStore()
     const user = ref()
-    const f1Response = await api.get('http://ergast.com/api/f1/current/results.json?limit=460')
+    const f1Response = await api.get('https://ergast.com/api/f1/current/results.json?limit=460')
     const f1Results = ref(f1Response.data.MRData.RaceTable.Races)
 
     console.log(auth.currentUser, 'GameID:', gameStore.gameID)

@@ -33,8 +33,8 @@ export default defineComponent({
         const auth = getAuth()
         const gameStore = useGameStore()
         
-        const f1ResponseNextRace = await api.get('http://ergast.com/api/f1/current/next.json')
-        const f1ResponseDrivers = await api.get('http://ergast.com/api/f1/current/drivers.json')
+        const f1ResponseNextRace = await api.get('https://ergast.com/api/f1/current/next.json')
+        const f1ResponseDrivers = await api.get('https://ergast.com/api/f1/current/drivers.json')
         const f1NextRace = f1ResponseNextRace.data.MRData.RaceTable.Races[0].raceName
         const f1Drivers = f1ResponseDrivers.data.MRData.DriverTable.Drivers.map(driver => driver.familyName)
         const f1Round = f1ResponseNextRace.data.MRData.RaceTable.Races[0].round

@@ -54,7 +54,7 @@ export default defineComponent({
         console.log(users.value[0])
 
         // Update user data ( should be a service)
-        const f1Response = await api.get('http://ergast.com/api/f1/current/results.json?limit=460')
+        const f1Response = await api.get('https://ergast.com/api/f1/current/results.json?limit=460')
         const f1Results = f1Response.data.MRData.RaceTable.Races
         var racePositions = []
         console.log('f1Results: ', f1Results)
