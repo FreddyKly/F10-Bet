@@ -74,9 +74,9 @@ export default defineComponent({
             var newTotPoints = 0
             for (let raceIdx = 0; raceIdx < racePositions.length; raceIdx++) {
                 console.log(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess))
-                let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess) - 10)
+                let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess) + 1 - 10)
                 console.log(posError)
-                if(posError <= 10 ) {
+                if(posError < 10 ) {
                     newGuesses[raceIdx].points = posDifPoints[posError]
                     newTotPoints += posDifPoints[posError]
                 }
