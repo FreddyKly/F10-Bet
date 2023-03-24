@@ -40,7 +40,7 @@ import { db } from 'src/firebaseConfig'
 import { useRoute } from 'vue-router';
 import { useGameStore } from 'src/stores/gameStore';
 import { api } from 'src/boot/axios';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth'
 import { collection, query, where, getDoc, doc, getDocs } from "firebase/firestore";
 
 export default defineComponent({
@@ -51,11 +51,20 @@ export default defineComponent({
     const auth = getAuth()
     const gameStore = useGameStore()
     const user = ref()
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        gameStore.userID = auth.currentUser.uid
+      } else {
+        // User is not signed in.
+        // ...
+      }
+    });
+
     const f1Response = await api.get('https://ergast.com/api/f1/current/results.json?limit=460')
     const f1Results = ref(f1Response.data.MRData.RaceTable.Races)
 
     console.log(auth.currentUser, 'GameID:', gameStore.gameID)
-    gameStore.userID = auth.currentUser.uid
     const userDoc = doc(db, "user", route.params.id)
     const userSnap = await getDoc(userDoc);
     user.value = userSnap.data()

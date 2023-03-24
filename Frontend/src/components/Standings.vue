@@ -29,7 +29,7 @@ import { defineComponent, ref } from 'vue'
 import { api } from 'src/boot/axios'
 import { useRoute } from 'vue-router';
 import { db } from 'src/firebaseConfig'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth'
 import { collection, query, where, getDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { useGameStore } from 'src/stores/gameStore';
 
@@ -43,8 +43,16 @@ export default defineComponent({
         const users = ref([])
         const posDifPoints = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
 
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                gameStore.userID = auth.currentUser.uid
+            } else {
+                // User is not signed in.
+                // ...
+            }
+        });
+
         console.log(auth.currentUser, 'GameID:', gameStore.gameID)
-        gameStore.userID = auth.currentUser.uid
         const userQ = query(collection(db, "user"), where("game_id", "==", gameStore.gameID));
         const userSnap = await getDocs(userQ);
         userSnap.forEach((doc) => {
