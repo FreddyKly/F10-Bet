@@ -44,6 +44,7 @@ export default defineComponent({
         const posDifPoints = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
 
         console.log(auth.currentUser, 'GameID:', gameStore.gameID)
+        gameStore.userID = auth.currentUser.uid
         const userQ = query(collection(db, "user"), where("game_id", "==", gameStore.gameID));
         const userSnap = await getDocs(userQ);
         userSnap.forEach((doc) => {
