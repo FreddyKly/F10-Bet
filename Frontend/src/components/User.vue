@@ -16,7 +16,7 @@
     <div v-for="(result, idx) in f1Results" :key="result" class="flex justify-center">
       <q-card class="q-my-md" style="min-width: 80vw; max-width:85vw">
         {{ result.raceName }} &emsp; {{ result.date }}
-        <q-btn class="q-ma-xs" color="primary" icon="edit" style="float: right;" v-on:click="createGame()"></q-btn>
+        <!-- <q-btn class="q-ma-xs" color="primary" icon="edit" style="float: right;" v-on:click="createGame()"></q-btn> -->
         <h6 class="q-my-md">
           Guess: {{ user.guesses[idx].guess }}
         </h6>

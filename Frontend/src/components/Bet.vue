@@ -3,10 +3,14 @@
         <h5 class="self-center" style="margin-bottom: 5px;">
             Make your guess for 10<sup>th</sup>
         </h5>
-        <p class="self-center" style="margin-bottom: 20px;">
-            Next race: {{ f1NextRace }}
-        </p>
-
+        <div class="row justify-center" style="width: 80vw;">
+            <div style="margin-left: 10%;">
+                <h5>for:</h5>
+            </div>
+            <div class="col flex self-center" style="margin-bottom: 20px; margin-left: 4%;">
+                <q-select v-model="selectedRace" :options="openGuessesLocations" label="Race"/>
+            </div>
+        </div>
     </div>
 
     <div class="column">
@@ -41,8 +45,23 @@ export default defineComponent({
     name: 'BetComp',
 
     async setup() {
+        const f1ResponseNextRace = await api.get('https://ergast.com/api/f1/current/next.json')
+        const f1ResponseDrivers = await api.get('https://ergast.com/api/f1/current/drivers.json')
+        const f1NextRace = f1ResponseNextRace.data.MRData.RaceTable.Races[0].raceName
+        const f1Drivers = f1ResponseDrivers.data.MRData.DriverTable.Drivers.map(driver => driver.familyName)
+        f1Drivers.unshift('')
+        const f1Round = f1ResponseNextRace.data.MRData.RaceTable.Races[0].round
+
         const auth = getAuth()
         const gameStore = useGameStore()
+
+        const userDoc = doc(db, "user", gameStore.userID)
+        const userSnap = await getDoc(userDoc);
+
+        const openGuesses = userSnap.data().guesses.filter(item => item.guess === '')
+        const openGuessesLocations = openGuesses.map(race => race.location)
+        var guess = ref(userSnap.data().guesses[f1Round - 1].guess)
+        var selectedRace = ref(openGuesses[0].location)
         const showNotif = ref(false)
 
         onAuthStateChanged(auth, (user) => {
@@ -54,20 +73,10 @@ export default defineComponent({
             }
         });
 
-        const f1ResponseNextRace = await api.get('https://ergast.com/api/f1/current/next.json')
-        const f1ResponseDrivers = await api.get('https://ergast.com/api/f1/current/drivers.json')
-        const f1NextRace = f1ResponseNextRace.data.MRData.RaceTable.Races[0].raceName
-        const f1Drivers = f1ResponseDrivers.data.MRData.DriverTable.Drivers.map(driver => driver.familyName)
-        const f1Round = f1ResponseNextRace.data.MRData.RaceTable.Races[0].round
-
         console.log(f1Drivers)
         console.log(auth.currentUser, 'GameID:', gameStore.gameID, 'UserID: ', gameStore.userID)
         console.log('f1Results: ', f1NextRace, f1Round)
-        
-
-        const userDoc = doc(db, "user", gameStore.userID)
-        const userSnap = await getDoc(userDoc);
-        var guess = ref(userSnap.data().guesses[f1Round - 1].guess)
+        console.log(openGuesses)
 
         // eslint-disable-next-line vue/no-watch-after-await
         watchEffect(async () => {
@@ -80,7 +89,7 @@ export default defineComponent({
             });
         })
 
-        return { f1NextRace, f1Drivers, guess, showNotif }
+        return { f1NextRace, f1Drivers, guess, showNotif, openGuessesLocations, selectedRace }
     }
 })
 </script>
