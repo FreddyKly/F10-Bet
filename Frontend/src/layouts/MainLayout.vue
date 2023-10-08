@@ -45,6 +45,9 @@ export default defineComponent({
   setup() {
     const auth = getAuth();
     const router = useRouter()
+    const gameStore = useGameStore()
+    const share = ref(false)
+    var gameID = ref(gameStore.gameID)
 
     function logOut() {
       signOut(auth).then(() => {
@@ -54,11 +57,6 @@ export default defineComponent({
         console.log('logout didnt worked')
       });
     }
-
-    const gameStore = useGameStore()
-    const share = ref(false)
-
-    var gameID = ref(gameStore.gameID)
 
     function copy() {
       copyToClipboard(gameID.value)

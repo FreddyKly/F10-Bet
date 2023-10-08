@@ -21,12 +21,14 @@
     async setup() {
       const router = useRouter()
       const auth = getAuth()
+      await setPersistence(auth, browserLocalPersistence);
       console.log(auth.currentUser)
       const gameStore = useGameStore()
       if(auth.currentUser !== null) {
+        // if(gameStore.gameID !== null) {
         console.log('User is logged in')
         const user = doc(db, "user", auth.currentUser.uid)
-        const userSnap = await getDoc(user);
+        const userSnap = await getDoc(user)
         console.log(userSnap.data().game_id)
         if (userSnap.exists()) {
             gameStore.gameID = userSnap.data().game_id
@@ -38,8 +40,6 @@
   
       function signInWithGoogle() {
         const provider = new GoogleAuthProvider()
-        setPersistence(auth, browserLocalPersistence)
-          .then(() => {
             return signInWithPopup(getAuth(), provider)
               .then(async () => {
                 const user = doc(db, "user", auth.currentUser.uid)
@@ -58,7 +58,6 @@
               .catch((error) => {
                 alert('login did not work')
               })
-          })
           .catch((error) => {
             const errorMessage = error.message;
             console.log(errorMessage)
