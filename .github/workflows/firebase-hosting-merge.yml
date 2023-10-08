@@ -13,8 +13,9 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           cd Frontend
-          npm ci
-          quasar build
+          npm install && npm install --only=dev
+          npm install @quasar/cli
+          npx quasar build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
