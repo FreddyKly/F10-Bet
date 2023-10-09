@@ -13,15 +13,15 @@
     <h5 class="q-ml-sm">
       Race Results:
     </h5>
-    <div v-for="(result, idx) in f1Results" :key="result" class="flex justify-center">
+    <div v-for="(result, idx) in madeGuesses" :key="result" class="flex justify-center">
       <q-card class="q-my-md" style="min-width: 80vw; max-width:85vw">
-        {{ result.raceName }} &emsp; {{ result.date }}
+        {{ result.location }}
         <!-- <q-btn class="q-ma-xs" color="primary" icon="edit" style="float: right;" v-on:click="createGame()"></q-btn> -->
         <h6 class="q-my-md">
           Guess: {{ user.guesses[idx].guess }}
         </h6>
         <h6 class="q-my-md">
-          10<sup>th</sup>: {{ result.Results[9].Driver.familyName }}
+          10<sup>th</sup>: {{ result.guess }}
         </h6>
         <h6 class="q-my-md">
           Points: {{ user.guesses[idx].points }}
@@ -51,6 +51,9 @@ export default defineComponent({
     const auth = getAuth()
     const gameStore = useGameStore()
     const user = ref()
+    const userDoc = doc(db, "user", route.params.id)
+    const userSnap = await getDoc(userDoc);
+    const madeGuesses = userSnap.data().guesses.filter(item => item.guess !== '')
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -62,16 +65,17 @@ export default defineComponent({
     });
 
     const f1Response = await api.get('https://ergast.com/api/f1/current/results.json?limit=460')
-    const f1Results = ref(f1Response.data.MRData.RaceTable.Races)
+    const f1Results = f1Response.data.MRData.RaceTable.Races
+    
 
     console.log(auth.currentUser, 'GameID:', gameStore.gameID)
-    const userDoc = doc(db, "user", route.params.id)
-    const userSnap = await getDoc(userDoc);
+    
     user.value = userSnap.data()
     console.log(userSnap.data())
-    console.log('f1Results: ', f1Results.value)
+    console.log('f1Results: ', f1Results)
+    console.log('Made Guesses: ', madeGuesses)
 
-    return { user, f1Results }
+    return { user, f1Results, madeGuesses }
   }
 })
 </script>
