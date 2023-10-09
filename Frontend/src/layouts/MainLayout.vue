@@ -38,13 +38,16 @@
           <q-card-section style="background-color: rgb(36, 36, 36); padding-top: 5px;">
             <q-select v-model="selectedRaceLocation" :options="locations" label="Race" style="font-size: 20px;"/>
           </q-card-section>
-            <div v-for="driver in driverGrid" :key="driver">
+            <div v-for="(driver, idx) in driverGrid" :key="driver">
               <q-separator dark/>
               <div class="row">
-                <span style="border-left: thick solid #609cd4; margin: 4px;"></span>
+                <p class="text-center" style="font-size: 20px; margin: 5px; width: 25px;">
+                  {{ idx }}
+                </p>
+                <span style="border-left: thick solid #609cd4; margin: 6px; margin-right: 10px;"></span>
                 <p style="font-size: 20px; margin: 5px;">
-                {{ driver }}
-              </p>
+                  {{ driver }}
+                </p>
               </div>
               
               
