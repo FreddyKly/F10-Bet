@@ -32,15 +32,18 @@
 
       <q-dialog v-model="showQuali">
         <q-card>
-          <q-card-section>
+          <h5 style="margin: 10px;">
+            Qualifying Results:
+          </h5>
+          <q-card-section style="background-color: rgb(36, 36, 36); padding-top: 5px;">
             <q-select v-model="selectedRaceLocation" :options="locations" label="Race" style="font-size: 20px;"/>
           </q-card-section>
-            <div v-for="tes in test" :key="tes">
+            <div v-for="driver in driverGrid" :key="driver">
               <q-separator dark/>
               <div class="row">
                 <span style="border-left: thick solid #609cd4; margin: 4px;"></span>
                 <p style="font-size: 20px; margin: 5px;">
-                {{ tes }}
+                {{ driver }}
               </p>
               </div>
               
@@ -74,8 +77,10 @@ export default defineComponent({
     const showQuali = ref(false)
     var gameID = ref(gameStore.gameID)
     var selectedRaceLocation = ref()
+    var qualiResult = ref()
     var locations = ref([])
     const test = ['asdfasdf', 'asdfdsaf', 'asdfsdf', 'asdfdsf', 'asdfasdf', 'asdfsdafas']
+    var driverGrid = Array()
 
     function logOut() {
       signOut(auth).then(() => {
@@ -99,7 +104,22 @@ export default defineComponent({
     async function getQualiResults(){
       const f1Response = await api.get('https://ergast.com/api/f1/current.json')
       locations.value = f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
-      console.log(locations.value)
+
+      const f1LastResult = await api.get('http://ergast.com/api/f1/current/9/results.json')
+      selectedRaceLocation.value = f1LastResult.data.MRData.RaceTable.Races[0].raceName
+      const lastRaceStandings = f1LastResult.data.MRData.RaceTable.Races[0].Results
+      
+      for(let i = 0; i < 20; i++){
+        console.log(lastRaceStandings[i].Driver)
+        if (lastRaceStandings[i].grid === "0") {
+          driverGrid.push(lastRaceStandings[i].Driver.familyName)
+        } else {
+          driverGrid[lastRaceStandings[i].grid - 1] = lastRaceStandings[i].Driver.familyName
+        }
+        
+      }
+      console.log(f1LastResult.data.MRData.RaceTable.Races[0])
+      console.log(driverGrid)
     }
 
     // eslint-disable-next-line vue/no-watch-after-await
@@ -107,8 +127,13 @@ export default defineComponent({
       if (gameStore.gameID != '') {
         gameID.value = gameStore.gameID
         console.log(gameStore.gameID, 'share: ', share.value)
-
       }
+    })
+    watchEffect(async () => {
+      console.log(selectedRaceLocation.value)
+      // const raceLocationID = f1LastResult.data.MRData.RaceTable.Races[0].Circuit.circuitId
+      // const f1SelectedRaceResults = await api.get(`http://ergast.com/api/f1/current/circuits/${raceLocationID}/results/.json`)
+      
     })
 
     return {
@@ -119,7 +144,7 @@ export default defineComponent({
       share,
       showQuali,
       selectedRaceLocation,
-      test,
+      driverGrid,
       sharePressed() {
         share.value = !share.value
       },
