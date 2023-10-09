@@ -21,7 +21,7 @@
           Guess: {{ user.guesses[idx].guess }}
         </h6>
         <h6 class="q-my-md">
-          10<sup>th</sup>: {{ result.guess }}
+          10<sup>th</sup>: {{ f1Results[idx].Results[9].Driver.familyName }}
         </h6>
         <h6 class="q-my-md">
           Points: {{ user.guesses[idx].points }}
