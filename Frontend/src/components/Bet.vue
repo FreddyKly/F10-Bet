@@ -49,7 +49,7 @@ export default defineComponent({
         const f1ResponseDrivers = await api.get('https://ergast.com/api/f1/current/drivers.json')
         const f1NextRace = f1ResponseNextRace.data.MRData.RaceTable.Races[0].raceName
         const f1Drivers = f1ResponseDrivers.data.MRData.DriverTable.Drivers.map(driver => driver.familyName)
-        f1Drivers.unshift('')
+        f1Drivers.unshift('') //So you can select "Nothing" as your bet
         const f1Round = f1ResponseNextRace.data.MRData.RaceTable.Races[0].round
 
         const auth = getAuth()

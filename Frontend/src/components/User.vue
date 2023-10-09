@@ -14,7 +14,7 @@
       Race Results:
     </h5>
     <div v-for="(result, idx) in madeGuesses" :key="result" class="flex justify-center">
-      <q-card class="q-my-md" style="min-width: 80vw; max-width:85vw">
+      <q-card class="q-my-md" style="min-width: 80vw; max-width:85vw; padding-left: 2%; padding-top: 1%;">
         {{ result.location }}
         <!-- <q-btn class="q-ma-xs" color="primary" icon="edit" style="float: right;" v-on:click="createGame()"></q-btn> -->
         <h6 class="q-my-md">
