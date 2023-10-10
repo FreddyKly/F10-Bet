@@ -39,19 +39,16 @@
             <q-select v-model="selectedRaceLocation" :options="locations" label="Race" style="font-size: 20px;"/>
           </q-card-section>
             <div v-for="(driver, idx) in driverGrid" :key="driver">
-              <q-separator dark/>
+              <q-separator dark style="margin-inline: 5px;"/>
               <div class="row">
                 <p class="text-center" style="font-size: 20px; margin: 5px; width: 25px;">
-                  {{ idx }}
+                  {{ idx + 1 }}
                 </p>
-                <span style="border-left: thick solid #609cd4; margin: 6px; margin-right: 10px;"></span>
+                <span :style="{'border-left': 'thick solid' + teamColors[driver[1]]}" style="margin: 6px; margin-right: 10px;"></span>
                 <p style="font-size: 20px; margin: 5px;">
-                  {{ driver }}
+                  {{ driver[0] }}
                 </p>
-              </div>
-              
-              
-              
+              </div>              
             </div>
         </q-card>
       </q-dialog>
@@ -82,8 +79,18 @@ export default defineComponent({
     var selectedRaceLocation = ref()
     var qualiResult = ref()
     var locations = ref([])
-    const test = ['asdfasdf', 'asdfdsaf', 'asdfsdf', 'asdfdsf', 'asdfasdf', 'asdfsdafas']
     var driverGrid = Array()
+    const teamColors = {
+      "Red Bull": "#609cd4",
+      "AlphaTauri": "#6d99b2",
+      "McLaren": "#f68a32",
+      "Alfa Romeo": "#d64964",
+      "Alpine F1 Team": "#41a8e0",
+      "Williams": "#47c3e0",
+      "Aston Martin": "#78ccb6",
+      "Mercedes": "#71d4c1",
+      "Ferrari": "#fa2948",
+      "Haas F1 Team": "#bcb6ae"}
 
     function logOut() {
       signOut(auth).then(() => {
@@ -108,16 +115,16 @@ export default defineComponent({
       const f1Response = await api.get('https://ergast.com/api/f1/current.json')
       locations.value = f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
 
-      const f1LastResult = await api.get('http://ergast.com/api/f1/current/9/results.json')
+      const f1LastResult = await api.get('http://ergast.com/api/f1/current/last/results.json')
       selectedRaceLocation.value = f1LastResult.data.MRData.RaceTable.Races[0].raceName
       const lastRaceStandings = f1LastResult.data.MRData.RaceTable.Races[0].Results
       
       for(let i = 0; i < 20; i++){
         console.log(lastRaceStandings[i].Driver)
         if (lastRaceStandings[i].grid === "0") {
-          driverGrid.push(lastRaceStandings[i].Driver.familyName)
+          driverGrid.push([lastRaceStandings[i].Driver.familyName, lastRaceStandings[i].Constructor.name])
         } else {
-          driverGrid[lastRaceStandings[i].grid - 1] = lastRaceStandings[i].Driver.familyName
+          driverGrid[lastRaceStandings[i].grid - 1] = [lastRaceStandings[i].Driver.familyName, lastRaceStandings[i].Constructor.name]
         }
         
       }
@@ -148,6 +155,7 @@ export default defineComponent({
       showQuali,
       selectedRaceLocation,
       driverGrid,
+      teamColors,
       sharePressed() {
         share.value = !share.value
       },
