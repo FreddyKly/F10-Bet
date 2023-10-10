@@ -152,7 +152,7 @@ export default defineComponent({
       const f1Response = await api.get('https://ergast.com/api/f1/current.json')
       locations.value = f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
 
-      const f1LastResult = await api.get('http://ergast.com/api/f1/current/last/results.json')
+      const f1LastResult = await api.get('https://ergast.com/api/f1/current/last/results.json')
       selectedRaceLocation.value = f1LastResult.data.MRData.RaceTable.Races[0].raceName
       const lastRaceStandings = f1LastResult.data.MRData.RaceTable.Races[0].Results
       getStartingGrid(lastRaceStandings)
@@ -170,7 +170,7 @@ export default defineComponent({
     })
     watchEffect(async () => {
       // console.log(selectedRaceLocation.value)
-      const f1SelectedRaceResults = await api.get(`http://ergast.com/api/f1/current/circuits/${circuits[selectedRaceLocation.value]}/results/.json`)
+      const f1SelectedRaceResults = await api.get(`https://ergast.com/api/f1/current/circuits/${circuits[selectedRaceLocation.value]}/results/.json`)
       const raceStandings = f1SelectedRaceResults.data.MRData.RaceTable.Races[0].Results
       getStartingGrid(raceStandings)
     })
