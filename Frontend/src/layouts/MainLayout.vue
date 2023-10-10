@@ -81,13 +81,13 @@ export default defineComponent({
     var locations = ref([])
     var driverGrid = Array()
     const teamColors = {
-      "Red Bull": "#609cd4",
+      "Red Bull": "#1842a3",
       "AlphaTauri": "#6d99b2",
       "McLaren": "#f68a32",
       "Alfa Romeo": "#d64964",
       "Alpine F1 Team": "#41a8e0",
       "Williams": "#47c3e0",
-      "Aston Martin": "#78ccb6",
+      "Aston Martin": "#145c37",
       "Mercedes": "#71d4c1",
       "Ferrari": "#fa2948",
       "Haas F1 Team": "#bcb6ae"}
