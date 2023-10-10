@@ -33,7 +33,7 @@
       <q-dialog v-model="showQuali">
         <q-card>
           <h5 style="margin: 10px;">
-            Qualifying Results:
+            Starting Grid:
           </h5>
           <q-card-section style="background-color: rgb(36, 36, 36); padding-top: 5px;">
             <q-select v-model="selectedRaceLocation" :options="locations" label="Race" style="font-size: 20px;"/>
@@ -79,7 +79,7 @@ export default defineComponent({
     var selectedRaceLocation = ref()
     var qualiResult = ref()
     var locations = ref([])
-    var driverGrid = Array()
+    var driverGrid = ref(Array())
     const teamColors = {
       "Red Bull": "#1842a3",
       "AlphaTauri": "#6d99b2",
@@ -91,6 +91,31 @@ export default defineComponent({
       "Mercedes": "#71d4c1",
       "Ferrari": "#fa2948",
       "Haas F1 Team": "#bcb6ae"}
+
+    const circuits = {
+      "Bahrain Grand Prix": "bahrain",
+      "Saudi Arabian Grand Prix": "jeddah",
+      "Australian Grand Prix": "albert_park",
+      "Azerbaijan Grand Prix": "baku",
+      "Miami Grand Prix": "miami",
+      "Monaco Grand Prix": "monaco",
+      "Spanish Grand Prix": "catalunya",
+      "Canadian Grand Prix": "villeneuve",
+      "Austrian Grand Prix": "red_bull_ring",
+      "British Grand Prix": "silverstone",
+      "Hungarian Grand Prix": "hungaroring",
+      "Belgian Grand Prix": "spa",
+      "Dutch Grand Prix": "zandvoort",
+      "Italian Grand Prix": "monza",
+      "Singapore Grand Prix": "marina_bay",
+      "Japanese Grand Prix": "suzuka",
+      "Qatar Grand Prix": "losail",
+      "United States Grand Prix": "americas",
+      "Mexico City Grand Prix": "rodriguez", 
+      "São Paulo Grand Prix": "interlagos",
+      "Las Vegas Grand Prix": "vegas",
+      "Abu Dhabi Grand Prix": "yas_marina"
+    }
 
     function logOut() {
       signOut(auth).then(() => {
@@ -110,6 +135,18 @@ export default defineComponent({
           console.log('copy did not work')
         })
     }
+    function getStartingGrid(raceStandings){
+      driverGrid.value = Array()
+      for(let i = 0; i < 20; i++){
+        console.log(raceStandings[i])
+        if (raceStandings[i].grid === "0") {
+          driverGrid.value.push([raceStandings[i].Driver.familyName, raceStandings[i].Constructor.name])
+        } else {
+          driverGrid.value[raceStandings[i].grid - 1] = [raceStandings[i].Driver.familyName, raceStandings[i].Constructor.name]
+        }
+        
+      }
+    }
 
     async function getQualiResults(){
       const f1Response = await api.get('https://ergast.com/api/f1/current.json')
@@ -118,18 +155,10 @@ export default defineComponent({
       const f1LastResult = await api.get('http://ergast.com/api/f1/current/last/results.json')
       selectedRaceLocation.value = f1LastResult.data.MRData.RaceTable.Races[0].raceName
       const lastRaceStandings = f1LastResult.data.MRData.RaceTable.Races[0].Results
+      getStartingGrid(lastRaceStandings)
       
-      for(let i = 0; i < 20; i++){
-        console.log(lastRaceStandings[i].Driver)
-        if (lastRaceStandings[i].grid === "0") {
-          driverGrid.push([lastRaceStandings[i].Driver.familyName, lastRaceStandings[i].Constructor.name])
-        } else {
-          driverGrid[lastRaceStandings[i].grid - 1] = [lastRaceStandings[i].Driver.familyName, lastRaceStandings[i].Constructor.name]
-        }
-        
-      }
-      console.log(f1LastResult.data.MRData.RaceTable.Races[0])
-      console.log(driverGrid)
+      // console.log(f1Response.data.MRData.RaceTable.Races)
+      console.log(driverGrid.value)
     }
 
     // eslint-disable-next-line vue/no-watch-after-await
@@ -140,10 +169,10 @@ export default defineComponent({
       }
     })
     watchEffect(async () => {
-      console.log(selectedRaceLocation.value)
-      // const raceLocationID = f1LastResult.data.MRData.RaceTable.Races[0].Circuit.circuitId
-      // const f1SelectedRaceResults = await api.get(`http://ergast.com/api/f1/current/circuits/${raceLocationID}/results/.json`)
-      
+      // console.log(selectedRaceLocation.value)
+      const f1SelectedRaceResults = await api.get(`http://ergast.com/api/f1/current/circuits/${circuits[selectedRaceLocation.value]}/results/.json`)
+      const raceStandings = f1SelectedRaceResults.data.MRData.RaceTable.Races[0].Results
+      getStartingGrid(raceStandings)
     })
 
     return {
