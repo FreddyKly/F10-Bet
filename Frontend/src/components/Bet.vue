@@ -1,8 +1,5 @@
 <template>
-    <div class="column flex justify-center">
-        <h5 class="self-center" style="margin-bottom: 5px;">
-            Make your guess for 10<sup>th</sup>
-        </h5>
+    <div class="column flex justify-center">     
         <div class="row justify-center" style="width: 80vw;">
             <div style="margin-left: 10%;">
                 <h5>for:</h5>

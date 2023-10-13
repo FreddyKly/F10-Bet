@@ -1,11 +1,7 @@
 <template>
     <div class="flex items-start">
         <div class="column justify-center full-width">
-            <div class="col flex justify-center">
-                <h5 style="margin: 5px">
-                    Standing:
-                </h5>
-            </div>
+            
             <div v-for="user in users" :key="user" class="col flex justify-center">
                 <q-card class="q-ma-md" style="height: 15vh; width: 80vw;"
                     v-on:click="$router.push(`/user/${user.google_id}`)">
@@ -16,9 +12,6 @@
                         Total Points: {{ user.total_points }}
                     </h6>
                 </q-card>
-            </div>
-            <div class="col flex justify-center q-mt-md">
-                <q-btn color="primary" size="1.5em" icon="payments" label="Bet" @click="$router.push('/Bet')" />
             </div>
         </div>
     </div>

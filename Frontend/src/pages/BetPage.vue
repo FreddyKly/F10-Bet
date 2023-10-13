@@ -1,10 +1,15 @@
 <template>
   <q-page>
+    <div class="column flex justify-center">
+      <h5 class="self-center" style="margin-bottom: 5px;">
+        Make your guess for 10<sup>th</sup>
+      </h5>
+    </div>
     <suspense>
-        <template #fallback>
-          Loading...
-        </template>
-        <Bet></Bet>
+      <template #fallback>
+        Loading...
+      </template>
+      <Bet></Bet>
     </suspense>
   </q-page>
 </template>
@@ -17,9 +22,9 @@ export default defineComponent({
   name: 'BetPage',
   components: { Bet },
 
-  setup () {
+  setup() {
 
-    return {  }
+    return {}
   }
 })
 </script>
