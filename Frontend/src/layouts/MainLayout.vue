@@ -8,7 +8,7 @@
           <q-icon name="equalizer" size="2em"/>
         </q-btn>
         <q-btn v-if="gameID != ''" class="q-mr-md" flat dense round icon="share" v-on:click="sharePressed"></q-btn>
-        <q-btn flat dense round label="logout" @click="logOut()" />
+        <!-- <q-btn flat dense round label="logout" @click="logOut()" /> -->
       </q-toolbar>
     </q-header>
 
