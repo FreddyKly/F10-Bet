@@ -8,7 +8,7 @@
           <q-icon name="equalizer" size="2em"/>
         </q-btn>
         <q-btn v-if="gameID != ''" class="q-mr-md" flat dense round icon="share" v-on:click="sharePressed"></q-btn>
-        <!-- <q-btn flat dense round label="logout" @click="logOut()" /> -->
+        <q-btn flat dense round label="logout" @click="logOut()" />
       </q-toolbar>
     </q-header>
 
@@ -65,6 +65,8 @@ import { useRouter } from 'vue-router';
 import { api } from 'src/boot/axios'
 import { useGameStore } from 'src/stores/gameStore';
 import { copyToClipboard } from 'quasar'
+// import { getTeamColors } from "src/utils"
+require("src/utils")
 
 export default defineComponent({
   name: 'MainLayout',
@@ -80,6 +82,7 @@ export default defineComponent({
     var qualiResult = ref()
     var locations = ref([])
     var driverGrid = ref(Array())
+    console.log(getTeamColors())
     const teamColors = {
       "Red Bull": "#1842a3",
       "AlphaTauri": "#6d99b2",
@@ -117,7 +120,7 @@ export default defineComponent({
       "Abu Dhabi Grand Prix": "yas_marina"
     }
 
-    function logOut() {
+    function logOut() {// whatever
       signOut(auth).then(() => {
         console.log('logout worked')
         router.push('/')
