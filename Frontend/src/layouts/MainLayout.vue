@@ -65,8 +65,7 @@ import { useRouter } from 'vue-router';
 import { api } from 'src/boot/axios'
 import { useGameStore } from 'src/stores/gameStore';
 import { copyToClipboard } from 'quasar'
-// import { getTeamColors } from "src/utils"
-require("src/utils")
+import { getTeamColors, getCurcuitNames } from "src/utils"
 
 export default defineComponent({
   name: 'MainLayout',
@@ -82,43 +81,8 @@ export default defineComponent({
     var qualiResult = ref()
     var locations = ref([])
     var driverGrid = ref(Array())
-    console.log(getTeamColors())
-    const teamColors = {
-      "Red Bull": "#1842a3",
-      "AlphaTauri": "#6d99b2",
-      "McLaren": "#f68a32",
-      "Alfa Romeo": "#d64964",
-      "Alpine F1 Team": "#41a8e0",
-      "Williams": "#47c3e0",
-      "Aston Martin": "#145c37",
-      "Mercedes": "#71d4c1",
-      "Ferrari": "#fa2948",
-      "Haas F1 Team": "#bcb6ae"}
-
-    const circuits = {
-      "Bahrain Grand Prix": "bahrain",
-      "Saudi Arabian Grand Prix": "jeddah",
-      "Australian Grand Prix": "albert_park",
-      "Azerbaijan Grand Prix": "baku",
-      "Miami Grand Prix": "miami",
-      "Monaco Grand Prix": "monaco",
-      "Spanish Grand Prix": "catalunya",
-      "Canadian Grand Prix": "villeneuve",
-      "Austrian Grand Prix": "red_bull_ring",
-      "British Grand Prix": "silverstone",
-      "Hungarian Grand Prix": "hungaroring",
-      "Belgian Grand Prix": "spa",
-      "Dutch Grand Prix": "zandvoort",
-      "Italian Grand Prix": "monza",
-      "Singapore Grand Prix": "marina_bay",
-      "Japanese Grand Prix": "suzuka",
-      "Qatar Grand Prix": "losail",
-      "United States Grand Prix": "americas",
-      "Mexico City Grand Prix": "rodriguez", 
-      "São Paulo Grand Prix": "interlagos",
-      "Las Vegas Grand Prix": "vegas",
-      "Abu Dhabi Grand Prix": "yas_marina"
-    }
+    const teamColors = getTeamColors()
+    const circuits = getCurcuitNames()
 
     function logOut() {// whatever
       signOut(auth).then(() => {
