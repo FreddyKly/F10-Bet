@@ -42,11 +42,12 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { setDoc, doc, query, collection, where, getDocs } from 'firebase/firestore'
+import { setDoc, doc, query, collection, where, getDocs, updateDoc, getDoc, deleteField } from 'firebase/firestore'
 import { useRouter } from 'vue-router';
 import { db } from 'src/firebaseConfig'
 import { api } from 'src/boot/axios';
 import { useGameStore } from 'src/stores/gameStore';
+import { getRaceLocations } from 'src/utils';
 
 export default defineComponent({
     name: 'EnterGameComponent',
@@ -63,8 +64,7 @@ export default defineComponent({
         console.log(auth.currentUser)
 
         async function initializeGuesses() {
-            const f1Response = await api.get('https://ergast.com/api/f1/current.json')
-            const locations = f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
+            const locations = await getRaceLocations()
             console.log(locations)
             var guesses = []
             for (let i = 0; i < locations.length; i++) {
@@ -82,16 +82,44 @@ export default defineComponent({
         async function createGame() {
             console.log('Create Game')
             const guesses = await initializeGuesses()
-            await setDoc(doc(db, "user", auth.currentUser.uid), {
-                e_mail: auth.currentUser.email,
-                google_id: auth.currentUser.uid,
-                game_id: 'g' + auth.currentUser.uid,
-                guesses: guesses,
-                total_points: 0,
-                username: auth.currentUser.displayName,
-            })
-            gameStore.gameID = 'g' + auth.currentUser.uid
-            router.push('/ranking')
+            // const user = doc(db, "user", auth.currentUser.uid)
+            const user = doc(db, "user", "")
+
+            const userSnap = await getDoc(user);
+            if (userSnap.exists()) {
+                let temp = userSnap.data().games
+                console.log("user found", temp['thisisagameid'])
+                await updateDoc(user, {
+                    games: {
+                        ['g' + auth.currentUser.uid]: {
+                            guesses: guesses,
+                            total_points: 2,
+                            active: true
+                        },
+                        [userSnap.data().game_id]: {
+                            guesses: userSnap.data().guesses,
+                            total_points: 333,
+                            active: false
+                        } 
+                    },
+                    // guesses: deleteField(),
+                    // game_id: deleteField(),
+                    // total_points: deleteField()
+                })
+            }
+            // await setDoc(doc(db, "user", auth.currentUser.uid), {
+            //     e_mail: auth.currentUser.email,
+            //     google_id: auth.currentUser.uid,
+            //     username: auth.currentUser.displayName,
+            //     game: {
+            //         game_id: 'g' + auth.currentUser.uid,
+            //         guesses: guesses,
+            //         total_points: 0,
+            //         active: true
+            //     }
+            // })
+            // gameStore.gameID = 'g' + auth.currentUser.uid
+            // router.push('/ranking')
         }
 
         async function joinGame() {

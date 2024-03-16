@@ -37,3 +37,9 @@ export const getCurcuitNames = () => {
     "Abu Dhabi Grand Prix": "yas_marina"
   }
 }
+import { api } from 'src/boot/axios';
+// Expected return: ['Bahrain Grand Prix', 'Saudi Arabian Grand Prix', 'Australian Grand Prix', ...]
+export const getRaceLocations = async () => {
+  const f1Response = await api.get('https://ergast.com/api/f1/current.json')
+  return f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
+}

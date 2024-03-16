@@ -48,7 +48,8 @@
                     console.log('Login worked for user: ', userSnap, '. The users gameID is: ', userSnap.data().game_id)
                     gameStore.gameID = userSnap.data().game_id
                     gameStore.userID = auth.currentUser.uid
-                    router.push('/ranking')
+                    // router.push('/ranking')
+                    router.push('/game')
                 } else {
                     router.push('/game')
                     console.log(auth.currentUser)

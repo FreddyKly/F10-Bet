@@ -89,7 +89,7 @@ export default defineComponent({
         console.log('logout worked')
         router.push('/')
       }).catch((error) => {
-        console.log('logout didnt worked')
+        console.log('logout didn\'t work')
       });
     }
 
@@ -102,6 +102,7 @@ export default defineComponent({
           console.log('copy did not work')
         })
     }
+
     function getStartingGrid(raceStandings){
       driverGrid.value = Array()
       for(let i = 0; i < 20; i++){
@@ -135,6 +136,7 @@ export default defineComponent({
         console.log(gameStore.gameID, 'share: ', share.value)
       }
     })
+    
     watchEffect(async () => {
       // console.log(selectedRaceLocation.value)
       const f1SelectedRaceResults = await api.get(`https://ergast.com/api/f1/current/circuits/${circuits[selectedRaceLocation.value]}/results/.json`)
