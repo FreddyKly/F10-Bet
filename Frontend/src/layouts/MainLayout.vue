@@ -65,7 +65,7 @@ import { useRouter } from 'vue-router';
 import { api } from 'src/boot/axios'
 import { useGameStore } from 'src/stores/gameStore';
 import { copyToClipboard } from 'quasar'
-import { getTeamColors, getCurcuitNames } from "src/utils"
+import { getTeamColors, getCurcuitNames } from "src/f1Service"
 
 export default defineComponent({
   name: 'MainLayout',
