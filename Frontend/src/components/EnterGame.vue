@@ -83,27 +83,21 @@ export default defineComponent({
             console.log('Create Game')
             const emptyGuesses = await initializeGuesses()
             const currentSeason = await f1Service.getCurrentSeasonYear()
-            console.log(generateUniqueID())
             const user = doc(db, "user", auth.currentUser.uid)
-            const userSnap = await getDoc(user);
-            getActiveGameID(userSnap)
-            // const user = doc(db, "user", auth.currentUser.uid)
+            const generatedGameID = generateUniqueID()
 
-            // await updateDoc(user, {
-            //     e_mail: auth.currentUser.email,
-            //     google_id: auth.currentUser.uid,
-            //     username: auth.currentUser.displayName,
-            //     games: {
-            //         [userSnap.data().game_id]: {
-            //             season: currentSeason,
-            //             guesses: emptyGuesses,
-            //             total_points: 0,
-            //             active: false
-            //         } 
-            //     },
-            // })
-            // gameStore.gameID = 'g' + auth.currentUser.uid
-            // router.push('/ranking')
+            await updateDoc(user, {
+                games: {
+                    [generatedGameID]: {
+                        season: currentSeason,
+                        guesses: emptyGuesses,
+                        total_points: 0,
+                        active: true
+                    } 
+                },
+            })
+            gameStore.gameID = generatedGameID
+            router.push('/ranking')
         }
 
         async function joinGame() {
