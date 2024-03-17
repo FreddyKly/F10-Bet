@@ -14,6 +14,7 @@
   import { db } from 'src/firebaseConfig'
   import { useRouter } from 'vue-router';
   import { useGameStore } from 'src/stores/gameStore'
+import { getActiveGameID } from 'src/utils'
   
   export default defineComponent({
     name: 'LoginComp',
@@ -45,8 +46,10 @@
                 const user = doc(db, "user", auth.currentUser.uid)
                 const userSnap = await getDoc(user);
                 if (userSnap.exists()) {
-                    console.log('Login worked for user: ', userSnap, '. The users gameID is: ', userSnap.data().game_id)
-                    gameStore.gameID = userSnap.data().game_id
+                  // const activeGameID = getActiveGameID(userSnap)
+                  // if (activeGameID)
+                    // console.log('Login worked for user: ', userSnap, '. The users gameID is: ', userSnap.data().game_id)
+                    // gameStore.gameID = userSnap.data().game_id
                     gameStore.userID = auth.currentUser.uid
                     // router.push('/ranking')
                     router.push('/game')
@@ -57,7 +60,7 @@
                 
               })
               .catch((error) => {
-                alert('login did not work')
+                alert('login did not work', error)
               })
           .catch((error) => {
             const errorMessage = error.message;

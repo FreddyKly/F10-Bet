@@ -47,7 +47,7 @@ import { useRouter } from 'vue-router';
 import { db } from 'src/firebaseConfig'
 import { api } from 'src/boot/axios';
 import { useGameStore } from 'src/stores/gameStore';
-import { generateUniqueID } from 'src/utils';
+import { generateUniqueID, getActiveGameID } from 'src/utils';
 import * as f1Service from 'src/f1Service';
 
 export default defineComponent({
@@ -66,7 +66,6 @@ export default defineComponent({
 
         async function initializeGuesses() {
             const locations = await f1Service.getRaceLocations()
-            console.log(locations)
             var guesses = []
             for (let i = 0; i < locations.length; i++) {
                 guesses.push({
@@ -84,44 +83,27 @@ export default defineComponent({
             console.log('Create Game')
             const emptyGuesses = await initializeGuesses()
             const currentSeason = await f1Service.getCurrentSeasonYear()
-            // const user = doc(db, "user", auth.currentUser.uid)
             console.log(generateUniqueID())
             const user = doc(db, "user", auth.currentUser.uid)
+            const userSnap = await getDoc(user);
+            getActiveGameID(userSnap)
+            // const user = doc(db, "user", auth.currentUser.uid)
 
-            // const userSnap = await getDoc(user);
-            // if (userSnap.exists()) {
-            //     let totPoints = 0
-            //     for (let guessIt = 0; guessIt < userSnap.data().guesses.length; guessIt++){
-            //         totPoints += Number(userSnap.data().guesses[guessIt].points)
-            //     }
-            //     console.log("user found", "totPoints", totPoints, "Season:", season)
-            //     await updateDoc(user, {
-            //         games: {
-            //             [userSnap.data().game_id]: {
-            //                 season: season,
-            //                 guesses: userSnap.data().guesses,
-            //                 total_points: totPoints,
-            //                 active: false
-            //             } 
-            //         },
-            //     })
-            // }
-
-            await updateDoc(user, {
-                e_mail: auth.currentUser.email,
-                google_id: auth.currentUser.uid,
-                username: auth.currentUser.displayName,
-                games: {
-                    [userSnap.data().game_id]: {
-                        season: currentSeason,
-                        guesses: emptyGuesses,
-                        total_points: 0,
-                        active: false
-                    } 
-                },
-            })
-            gameStore.gameID = 'g' + auth.currentUser.uid
-            router.push('/ranking')
+            // await updateDoc(user, {
+            //     e_mail: auth.currentUser.email,
+            //     google_id: auth.currentUser.uid,
+            //     username: auth.currentUser.displayName,
+            //     games: {
+            //         [userSnap.data().game_id]: {
+            //             season: currentSeason,
+            //             guesses: emptyGuesses,
+            //             total_points: 0,
+            //             active: false
+            //         } 
+            //     },
+            // })
+            // gameStore.gameID = 'g' + auth.currentUser.uid
+            // router.push('/ranking')
         }
 
         async function joinGame() {
