@@ -107,7 +107,7 @@ export default defineComponent({
     function getStartingGrid(raceStandings){
       driverGrid.value = Array()
       for(let i = 0; i < 20; i++){
-        console.log(raceStandings[i])
+        // console.log(raceStandings[i])
         if (raceStandings[i].grid === "0") {
           driverGrid.value.push([raceStandings[i].Driver.familyName, raceStandings[i].Constructor.name])
         } else {
