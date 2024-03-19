@@ -35,6 +35,18 @@
                     </q-card-actions>
                 </q-card>
             </q-dialog>
+
+            <q-dialog v-model="gameNotActive" persistent transition-show="scale" transition-hide="scale">
+                <q-card style="width: 50vw">
+                    <q-card-section>
+                        <div class="text-h6">This game is not active anymore. It is most likely a game from a past season. Create a new Game.</div>
+                    </q-card-section>
+
+                    <q-card-actions>
+                        <q-btn text-color="primary" flat label="OK" v-close-popup />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
         </div>
     </q-page>
 </template>
@@ -57,6 +69,7 @@ export default defineComponent({
     async setup() {
         var join = ref(false)
         var invalidGameID = ref(false)
+        var gameNotActive = ref(false)
         var gameID = ref('')
 
         const gameStore = useGameStore()
@@ -104,33 +117,30 @@ export default defineComponent({
             console.log('Join Game')
             const userQ = query(collection(db, "user"), orderBy(`games.${gameID.value}`));
             const userSnap = await getDocs(userQ);
-            userSnap.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data());
-            });
-            console.log(userSnap)
-            // const guesses = await initializeGuesses()
-            // if (!userSnap.empty) {
-            //     console.log('exists')
-            //     await setDoc(doc(db, "user", auth.currentUser.uid), {
-            //         games: {
-            //             [gameID.value]: {
-            //                 season: currentSeason,
-            //                 guesses: emptyGuesses,
-            //                 total_points: 0,
-            //                 active: true
-            //             } 
-            //         },
-            //     })
-            //     join.value = false
-            //     gameStore.gameID = gameID.value
-            //     router.push('/ranking')
-            // } else {
-            //     console.log('didnt exist')
-            //     invalidGameID.value = true
-            // }
+            if(userSnap.empty){
+                invalidGameID.value = true
+            } else {
+                gameNotActive.value = !userSnap.docs[0].data().games[gameID.value].active
+                if (!gameNotActive.value){
+                    console.log("active game")
+                    const emptyGuesses = await initializeGuesses()
+                    await updateDoc(doc(db, "user", auth.currentUser.uid), {
+                        games: {
+                            [gameID.value]: {
+                                season: currentSeason,
+                                guesses: emptyGuesses,
+                                total_points: 0,
+                                active: true
+                            }
+                        },
+                    })
+                    join.value = false
+                    gameStore.gameID = gameID.value
+                    router.push('/ranking')
+                }
+            }
         }
-        return { createGame, joinGame, join, gameID, invalidGameID }
+        return { createGame, joinGame, join, gameID, invalidGameID, gameNotActive }
     }
 })
 </script>
