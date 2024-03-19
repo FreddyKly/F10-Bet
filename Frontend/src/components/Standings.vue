@@ -72,11 +72,11 @@ export default defineComponent({
         // Calculate points for each user and each race
         console.log(racePositions)
         for (let userIdx = 0; userIdx < users.value.length; userIdx++) {
-            var newGuesses = users.value[userIdx].guesses
+            var newGuesses = users.value[userIdx].games[gameStore.gameID].guesses
             var newTotPoints = 0
             for (let raceIdx = 0; raceIdx < racePositions.length; raceIdx++) {
                 // console.log(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess))
-                let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess) + 1 - 10)
+                let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].games[gameStore.gameID].guesses[raceIdx].guess) + 1 - 10)
                 // console.log(posError)
                 if(posError < 10 ) {
                     newGuesses[raceIdx].points = posDifPoints[posError]
@@ -86,7 +86,7 @@ export default defineComponent({
             var userRef = doc(db, 'user', users.value[userIdx].google_id)
             console.log('new Guesses: ', newGuesses, 'new Total Points: ', newTotPoints)
             await updateDoc(userRef, {
-                games: {
+                [`games.${generatedGameID}`]: {
                     [gameStore.gameID]: {
                         guesses: newGuesses,
                         total_points: newTotPoints,

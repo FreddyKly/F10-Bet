@@ -77,12 +77,13 @@ export default defineComponent({
     const share = ref(false)
     const showQuali = ref(false)
     var gameID = ref(gameStore.gameID)
-    var selectedRaceLocation = ref()
+    
     var qualiResult = ref()
     var locations = ref([])
     var driverGrid = ref(Array())
     const teamColors = getTeamColors()
     const circuits = getCurcuitNames()
+    var selectedRaceLocation = ref("Bahrain Grand Prix")
 
     function logOut() {// whatever
       signOut(auth).then(() => {
@@ -126,7 +127,7 @@ export default defineComponent({
       getStartingGrid(lastRaceStandings)
       
       // console.log(f1Response.data.MRData.RaceTable.Races)
-      console.log(driverGrid.value)
+      // console.log(driverGrid.value)
     }
 
     // eslint-disable-next-line vue/no-watch-after-await
@@ -138,7 +139,6 @@ export default defineComponent({
     })
     
     watchEffect(async () => {
-      // console.log(selectedRaceLocation.value)
       const f1SelectedRaceResults = await api.get(`https://ergast.com/api/f1/current/circuits/${circuits[selectedRaceLocation.value]}/results/.json`)
       const raceStandings = f1SelectedRaceResults.data.MRData.RaceTable.Races[0].Results
       getStartingGrid(raceStandings)
