@@ -102,9 +102,12 @@ export default defineComponent({
 
         async function joinGame() {
             console.log('Join Game')
-            console.log(join.value)
-            const userQ = query(collection(db, "user"), orderBy(gameID.value));
+            const userQ = query(collection(db, "user"), orderBy(`games.${gameID.value}`));
             const userSnap = await getDocs(userQ);
+            userSnap.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+            });
             console.log(userSnap)
             // const guesses = await initializeGuesses()
             // if (!userSnap.empty) {
