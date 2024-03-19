@@ -42,7 +42,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { setDoc, doc, query, collection, where, getDocs, updateDoc, getDoc, deleteField } from 'firebase/firestore'
+import { setDoc, doc, query, collection, where, getDocs, updateDoc, getDoc, deleteField, orderBy } from 'firebase/firestore'
 import { useRouter } from 'vue-router';
 import { db } from 'src/firebaseConfig'
 import { api } from 'src/boot/axios';
@@ -103,27 +103,29 @@ export default defineComponent({
         async function joinGame() {
             console.log('Join Game')
             console.log(join.value)
-            const userQ = query(collection(db, "user"), where("game_id", "==", gameID.value));
+            const userQ = query(collection(db, "user"), orderBy(gameID.value));
             const userSnap = await getDocs(userQ);
             console.log(userSnap)
-            const guesses = await initializeGuesses()
-            if (!userSnap.empty) {
-                console.log('exists')
-                await setDoc(doc(db, "user", auth.currentUser.uid), {
-                    e_mail: auth.currentUser.email,
-                    google_id: auth.currentUser.uid,
-                    game_id: gameID.value,
-                    guesses: guesses,
-                    total_points: 0,
-                    username: auth.currentUser.displayName,
-                })
-                join.value = false
-                gameStore.gameID = gameID.value
-                router.push('/ranking')
-            } else {
-                console.log('didnt exist')
-                invalidGameID.value = true
-            }
+            // const guesses = await initializeGuesses()
+            // if (!userSnap.empty) {
+            //     console.log('exists')
+            //     await setDoc(doc(db, "user", auth.currentUser.uid), {
+            //         games: {
+            //             [gameID.value]: {
+            //                 season: currentSeason,
+            //                 guesses: emptyGuesses,
+            //                 total_points: 0,
+            //                 active: true
+            //             } 
+            //         },
+            //     })
+            //     join.value = false
+            //     gameStore.gameID = gameID.value
+            //     router.push('/ranking')
+            // } else {
+            //     console.log('didnt exist')
+            //     invalidGameID.value = true
+            // }
         }
         return { createGame, joinGame, join, gameID, invalidGameID }
     }
