@@ -53,7 +53,7 @@ export default defineComponent({
     const user = ref()
     const userDoc = doc(db, "user", route.params.id)
     const userSnap = await getDoc(userDoc);
-    const madeGuesses = userSnap.data().guesses.filter(item => item.guess !== '')
+    const madeGuesses = userSnap.data().games[gameStore.gameID].guesses.filter(item => item.guess !== '')
 
     onAuthStateChanged(auth, (user) => {
       if (user) {

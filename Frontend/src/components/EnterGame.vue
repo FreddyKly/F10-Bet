@@ -100,14 +100,12 @@ export default defineComponent({
             const generatedGameID = generateUniqueID()
 
             await updateDoc(user, {
-                games: {
-                    [generatedGameID]: {
+                [`games.${generatedGameID}`]: {
                         season: currentSeason,
                         guesses: emptyGuesses,
                         total_points: 0,
                         active: true
                     } 
-                },
             })
             gameStore.gameID = generatedGameID
             router.push('/ranking')
@@ -125,14 +123,12 @@ export default defineComponent({
                     console.log("active game")
                     const emptyGuesses = await initializeGuesses()
                     await updateDoc(doc(db, "user", auth.currentUser.uid), {
-                        games: {
-                            [gameID.value]: {
-                                season: currentSeason,
-                                guesses: emptyGuesses,
-                                total_points: 0,
-                                active: true
-                            }
-                        },
+                        [`games.${generatedGameID}`]: {
+                            season: currentSeason,
+                            guesses: emptyGuesses,
+                            total_points: 0,
+                            active: true
+                        } 
                     })
                     join.value = false
                     gameStore.gameID = gameID.value

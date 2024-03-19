@@ -23,7 +23,7 @@ import { api } from 'src/boot/axios'
 import { useRoute } from 'vue-router';
 import { db } from 'src/firebaseConfig'
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth'
-import { collection, query, where, getDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDoc, doc, getDocs, updateDoc, orderBy } from "firebase/firestore";
 import { useGameStore } from 'src/stores/gameStore';
 
 export default defineComponent({
@@ -46,7 +46,7 @@ export default defineComponent({
         });
 
         console.log(auth.currentUser, 'GameID:', gameStore.gameID)
-        const userQ = query(collection(db, "user"), where("game_id", "==", gameStore.gameID));
+        const userQ = query(collection(db, "user"), orderBy(`games.${gameStore.gameID}`));
         const userSnap = await getDocs(userQ);
         userSnap.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
@@ -86,9 +86,13 @@ export default defineComponent({
             var userRef = doc(db, 'user', users.value[userIdx].google_id)
             console.log('new Guesses: ', newGuesses, 'new Total Points: ', newTotPoints)
             await updateDoc(userRef, {
-                guesses: newGuesses,
-                total_points: newTotPoints
-            });
+                games: {
+                    [gameStore.gameID]: {
+                        guesses: newGuesses,
+                        total_points: newTotPoints,
+                    } 
+                },
+            })
         }
 
 
