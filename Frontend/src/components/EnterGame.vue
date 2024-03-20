@@ -75,6 +75,7 @@ export default defineComponent({
         const gameStore = useGameStore()
         const router = useRouter()
         const auth = getAuth()
+        const currentSeason = await f1Service.getCurrentSeasonYear()
         console.log(auth.currentUser)
 
         async function initializeGuesses() {
@@ -95,7 +96,6 @@ export default defineComponent({
         async function createGame() {
             console.log('Create Game')
             const emptyGuesses = await initializeGuesses()
-            const currentSeason = await f1Service.getCurrentSeasonYear()
             const user = doc(db, "user", auth.currentUser.uid)
             const generatedGameID = generateUniqueID()
 
@@ -123,7 +123,7 @@ export default defineComponent({
                     console.log("active game")
                     const emptyGuesses = await initializeGuesses()
                     await updateDoc(doc(db, "user", auth.currentUser.uid), {
-                        [`games.${generatedGameID}`]: {
+                        [`games.${gameID.value}`]: {
                             season: currentSeason,
                             guesses: emptyGuesses,
                             total_points: 0,

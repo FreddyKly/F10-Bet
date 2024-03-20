@@ -78,9 +78,7 @@ export default defineComponent({
             newGuesses[idxRound].guess = guess.value
             console.log(newGuesses, idxRound, gameStore.gameID)
             await updateDoc(doc(db, "user", auth.currentUser.uid), {
-                [`games.${gameStore.gameID}`]: {
-                    guesses: newGuesses,
-                } 
+                [`games.${gameStore.gameID}.guesses`]: newGuesses,
             }).then(
                 showNotif.value = true
             );
