@@ -3,9 +3,9 @@ import { api } from 'src/boot/axios';
 export const getTeamColors = () => {
     return {
       "Red Bull": "#1842a3",
-      "AlphaTauri": "#6d99b2",
+      "RB F1 Team": "#61abff",
       "McLaren": "#f68a32",
-      "Alfa Romeo": "#d64964",
+      "Sauber": "#5ae35a",
       "Alpine F1 Team": "#41a8e0",
       "Williams": "#47c3e0",
       "Aston Martin": "#145c37",
