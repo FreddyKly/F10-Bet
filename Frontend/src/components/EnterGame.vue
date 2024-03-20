@@ -35,6 +35,18 @@
                     </q-card-actions>
                 </q-card>
             </q-dialog>
+
+            <q-dialog v-model="gameNotActive" persistent transition-show="scale" transition-hide="scale">
+                <q-card style="width: 50vw">
+                    <q-card-section>
+                        <div class="text-h6">This game is not active anymore. It is most likely a game from a past season. Create a new Game.</div>
+                    </q-card-section>
+
+                    <q-card-actions>
+                        <q-btn text-color="primary" flat label="OK" v-close-popup />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
         </div>
     </q-page>
 </template>
@@ -42,11 +54,13 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { setDoc, doc, query, collection, where, getDocs } from 'firebase/firestore'
+import { setDoc, doc, query, collection, where, getDocs, updateDoc, getDoc, deleteField, orderBy } from 'firebase/firestore'
 import { useRouter } from 'vue-router';
 import { db } from 'src/firebaseConfig'
 import { api } from 'src/boot/axios';
 import { useGameStore } from 'src/stores/gameStore';
+import { generateUniqueID, getActiveGameID } from 'src/utils';
+import * as f1Service from 'src/f1Service';
 
 export default defineComponent({
     name: 'EnterGameComponent',
@@ -55,17 +69,17 @@ export default defineComponent({
     async setup() {
         var join = ref(false)
         var invalidGameID = ref(false)
+        var gameNotActive = ref(false)
         var gameID = ref('')
 
         const gameStore = useGameStore()
         const router = useRouter()
         const auth = getAuth()
+        const currentSeason = await f1Service.getCurrentSeasonYear()
         console.log(auth.currentUser)
 
         async function initializeGuesses() {
-            const f1Response = await api.get('https://ergast.com/api/f1/current.json')
-            const locations = f1Response.data.MRData.RaceTable.Races.map(race => race.raceName)
-            console.log(locations)
+            const locations = await f1Service.getRaceLocations()
             var guesses = []
             for (let i = 0; i < locations.length; i++) {
                 guesses.push({
@@ -81,45 +95,48 @@ export default defineComponent({
 
         async function createGame() {
             console.log('Create Game')
-            const guesses = await initializeGuesses()
-            await setDoc(doc(db, "user", auth.currentUser.uid), {
-                e_mail: auth.currentUser.email,
-                google_id: auth.currentUser.uid,
-                game_id: 'g' + auth.currentUser.uid,
-                guesses: guesses,
-                total_points: 0,
-                username: auth.currentUser.displayName,
+            const emptyGuesses = await initializeGuesses()
+            const user = doc(db, "user", auth.currentUser.uid)
+            const generatedGameID = generateUniqueID()
+
+            await updateDoc(user, {
+                [`games.${generatedGameID}`]: {
+                        season: currentSeason,
+                        guesses: emptyGuesses,
+                        total_points: 0,
+                        active: true
+                    } 
             })
-            gameStore.gameID = 'g' + auth.currentUser.uid
+            gameStore.gameID = generatedGameID
             router.push('/ranking')
         }
 
         async function joinGame() {
             console.log('Join Game')
-            console.log(join.value)
-            const userQ = query(collection(db, "user"), where("game_id", "==", gameID.value));
+            const userQ = query(collection(db, "user"), orderBy(`games.${gameID.value}`));
             const userSnap = await getDocs(userQ);
-            console.log(userSnap)
-            const guesses = await initializeGuesses()
-            if (!userSnap.empty) {
-                console.log('exists')
-                await setDoc(doc(db, "user", auth.currentUser.uid), {
-                    e_mail: auth.currentUser.email,
-                    google_id: auth.currentUser.uid,
-                    game_id: gameID.value,
-                    guesses: guesses,
-                    total_points: 0,
-                    username: auth.currentUser.displayName,
-                })
-                join.value = false
-                gameStore.gameID = gameID.value
-                router.push('/ranking')
-            } else {
-                console.log('didnt exist')
+            if(userSnap.empty){
                 invalidGameID.value = true
+            } else {
+                gameNotActive.value = !userSnap.docs[0].data().games[gameID.value].active
+                if (!gameNotActive.value){
+                    console.log("active game")
+                    const emptyGuesses = await initializeGuesses()
+                    await updateDoc(doc(db, "user", auth.currentUser.uid), {
+                        [`games.${gameID.value}`]: {
+                            season: currentSeason,
+                            guesses: emptyGuesses,
+                            total_points: 0,
+                            active: true
+                        } 
+                    })
+                    join.value = false
+                    gameStore.gameID = gameID.value
+                    router.push('/ranking')
+                }
             }
         }
-        return { createGame, joinGame, join, gameID, invalidGameID }
+        return { createGame, joinGame, join, gameID, invalidGameID, gameNotActive }
     }
 })
 </script>

@@ -36,6 +36,7 @@ import { useGameStore } from 'src/stores/gameStore';
 import { api } from 'src/boot/axios';
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { getDoc, doc, updateDoc} from "firebase/firestore";
+import { getActiveGameID } from 'src/utils';
 
 export default defineComponent({
     name: 'BetComp',
@@ -50,8 +51,8 @@ export default defineComponent({
 
         const userDoc = doc(db, "user", gameStore.userID)
         const userSnap = await getDoc(userDoc);
-
-        const openGuesses = userSnap.data().guesses.filter(item => item.guess === '')
+        gameStore.gameID = getActiveGameID(userSnap)
+        const openGuesses = userSnap.data().games[gameStore.gameID].guesses.filter(item => item.guess === '')
         const openGuessesLocations = openGuesses.map(race => race.location)
         var guess = ref()
         var selectedRaceLocation = ref(openGuesses[0].location)
@@ -72,12 +73,12 @@ export default defineComponent({
         // console.log(openGuesses)
 
         async function submit() {
-            var newGuesses = userSnap.data().guesses
+            var newGuesses = userSnap.data().games[gameStore.gameID].guesses
             const idxRound = newGuesses.findIndex((race) => race.location === selectedRaceLocation.value)
             newGuesses[idxRound].guess = guess.value
-            console.log(newGuesses, idxRound)
-            await updateDoc(userDoc, {
-                guesses: newGuesses,
+            console.log(newGuesses, idxRound, gameStore.gameID)
+            await updateDoc(doc(db, "user", auth.currentUser.uid), {
+                [`games.${gameStore.gameID}.guesses`]: newGuesses,
             }).then(
                 showNotif.value = true
             );

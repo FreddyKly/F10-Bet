@@ -8,7 +8,7 @@
           <q-icon name="equalizer" size="2em"/>
         </q-btn>
         <q-btn v-if="gameID != ''" class="q-mr-md" flat dense round icon="share" v-on:click="sharePressed"></q-btn>
-        <!-- <q-btn flat dense round label="logout" @click="logOut()" /> -->
+        <q-btn flat dense round label="logout" @click="logOut()" />
       </q-toolbar>
     </q-header>
 
@@ -65,6 +65,7 @@ import { useRouter } from 'vue-router';
 import { api } from 'src/boot/axios'
 import { useGameStore } from 'src/stores/gameStore';
 import { copyToClipboard } from 'quasar'
+import { getTeamColors, getCurcuitNames } from "src/f1Service"
 
 export default defineComponent({
   name: 'MainLayout',
@@ -76,53 +77,20 @@ export default defineComponent({
     const share = ref(false)
     const showQuali = ref(false)
     var gameID = ref(gameStore.gameID)
-    var selectedRaceLocation = ref()
+    
     var qualiResult = ref()
     var locations = ref([])
     var driverGrid = ref(Array())
-    const teamColors = {
-      "Red Bull": "#1842a3",
-      "AlphaTauri": "#6d99b2",
-      "McLaren": "#f68a32",
-      "Alfa Romeo": "#d64964",
-      "Alpine F1 Team": "#41a8e0",
-      "Williams": "#47c3e0",
-      "Aston Martin": "#145c37",
-      "Mercedes": "#71d4c1",
-      "Ferrari": "#fa2948",
-      "Haas F1 Team": "#bcb6ae"}
+    const teamColors = getTeamColors()
+    const circuits = getCurcuitNames()
+    var selectedRaceLocation = ref("Bahrain Grand Prix")
 
-    const circuits = {
-      "Bahrain Grand Prix": "bahrain",
-      "Saudi Arabian Grand Prix": "jeddah",
-      "Australian Grand Prix": "albert_park",
-      "Azerbaijan Grand Prix": "baku",
-      "Miami Grand Prix": "miami",
-      "Monaco Grand Prix": "monaco",
-      "Spanish Grand Prix": "catalunya",
-      "Canadian Grand Prix": "villeneuve",
-      "Austrian Grand Prix": "red_bull_ring",
-      "British Grand Prix": "silverstone",
-      "Hungarian Grand Prix": "hungaroring",
-      "Belgian Grand Prix": "spa",
-      "Dutch Grand Prix": "zandvoort",
-      "Italian Grand Prix": "monza",
-      "Singapore Grand Prix": "marina_bay",
-      "Japanese Grand Prix": "suzuka",
-      "Qatar Grand Prix": "losail",
-      "United States Grand Prix": "americas",
-      "Mexico City Grand Prix": "rodriguez", 
-      "São Paulo Grand Prix": "interlagos",
-      "Las Vegas Grand Prix": "vegas",
-      "Abu Dhabi Grand Prix": "yas_marina"
-    }
-
-    function logOut() {
+    function logOut() {// whatever
       signOut(auth).then(() => {
         console.log('logout worked')
         router.push('/')
       }).catch((error) => {
-        console.log('logout didnt worked')
+        console.log('logout didn\'t work')
       });
     }
 
@@ -135,10 +103,11 @@ export default defineComponent({
           console.log('copy did not work')
         })
     }
+
     function getStartingGrid(raceStandings){
       driverGrid.value = Array()
       for(let i = 0; i < 20; i++){
-        console.log(raceStandings[i])
+        // console.log(raceStandings[i])
         if (raceStandings[i].grid === "0") {
           driverGrid.value.push([raceStandings[i].Driver.familyName, raceStandings[i].Constructor.name])
         } else {
@@ -158,7 +127,7 @@ export default defineComponent({
       getStartingGrid(lastRaceStandings)
       
       // console.log(f1Response.data.MRData.RaceTable.Races)
-      console.log(driverGrid.value)
+      // console.log(driverGrid.value)
     }
 
     // eslint-disable-next-line vue/no-watch-after-await
@@ -168,8 +137,8 @@ export default defineComponent({
         console.log(gameStore.gameID, 'share: ', share.value)
       }
     })
+    
     watchEffect(async () => {
-      // console.log(selectedRaceLocation.value)
       const f1SelectedRaceResults = await api.get(`https://ergast.com/api/f1/current/circuits/${circuits[selectedRaceLocation.value]}/results/.json`)
       const raceStandings = f1SelectedRaceResults.data.MRData.RaceTable.Races[0].Results
       getStartingGrid(raceStandings)

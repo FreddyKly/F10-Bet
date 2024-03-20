@@ -18,13 +18,13 @@
         {{ result.location }}
         <!-- <q-btn class="q-ma-xs" color="primary" icon="edit" style="float: right;" v-on:click="createGame()"></q-btn> -->
         <h6 class="q-my-md">
-          Guess: {{ user.guesses[idx].guess }}
+          Guess: {{ user.games[gameID].guesses[idx].guess }}
         </h6>
         <h6 class="q-my-md">
           10<sup>th</sup>: {{ f1Results[idx].Results[9].Driver.familyName }}
         </h6>
         <h6 class="q-my-md">
-          Points: {{ user.guesses[idx].points }}
+          Points: {{ user.games[gameID].guesses[idx].points }}
         </h6>
 
 
@@ -53,7 +53,8 @@ export default defineComponent({
     const user = ref()
     const userDoc = doc(db, "user", route.params.id)
     const userSnap = await getDoc(userDoc);
-    const madeGuesses = userSnap.data().guesses.filter(item => item.guess !== '')
+    const madeGuesses = userSnap.data().games[gameStore.gameID].guesses.filter(item => item.guess !== '')
+    const gameID = gameStore.gameID
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -75,7 +76,7 @@ export default defineComponent({
     console.log('f1Results: ', f1Results)
     console.log('Made Guesses: ', madeGuesses)
 
-    return { user, f1Results, madeGuesses }
+    return { user, f1Results, madeGuesses, gameID }
   }
 })
 </script>

@@ -10,10 +10,11 @@
   import { defineComponent } from 'vue'
   import Standings from 'src/components/Standings.vue'
   import { getAuth, GoogleAuthProvider, signInWithPopup, browserLocalPersistence, setPersistence } from 'firebase/auth'
-  import { doc, getDoc } from 'firebase/firestore'
+  import { doc, getDoc, setDoc } from 'firebase/firestore'
   import { db } from 'src/firebaseConfig'
   import { useRouter } from 'vue-router';
   import { useGameStore } from 'src/stores/gameStore'
+import { getActiveGameID } from 'src/utils'
   
   export default defineComponent({
     name: 'LoginComp',
@@ -45,18 +46,27 @@
                 const user = doc(db, "user", auth.currentUser.uid)
                 const userSnap = await getDoc(user);
                 if (userSnap.exists()) {
-                    console.log('Login worked for user: ', userSnap, '. The users gameID is: ', userSnap.data().game_id)
-                    gameStore.gameID = userSnap.data().game_id
+                  console.log('Login worked for user: ', userSnap)
+                  const activeGameID = getActiveGameID(userSnap)
+                  if (activeGameID){ 
+                    gameStore.gameID = activeGameID
                     gameStore.userID = auth.currentUser.uid
                     router.push('/ranking')
+                  } else {
+                    router.push("/game")
+                  }
                 } else {
-                    router.push('/game')
-                    console.log(auth.currentUser)
+                  await setDoc(user, {
+                    e_mail: auth.currentUser.email,
+                    google_id: auth.currentUser.uid,
+                    username: auth.currentUser.displayName,
+                  })
+                  router.push('/game')
                 }
                 
               })
               .catch((error) => {
-                alert('login did not work')
+                alert('login did not work', error)
               })
           .catch((error) => {
             const errorMessage = error.message;
