@@ -9,7 +9,7 @@
                         {{ user.username }}
                     </h5>
                     <h6 style="margin: 3px;">
-                        Total Points: {{ user.total_points }}
+                        Total Points: {{ user.games[gameID].total_points }}
                     </h6>
                 </q-card>
             </div>
@@ -18,7 +18,7 @@
 </template>
   
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, toRaw } from 'vue'
 import { api } from 'src/boot/axios'
 import { useRoute } from 'vue-router';
 import { db } from 'src/firebaseConfig'
@@ -35,6 +35,7 @@ export default defineComponent({
         const gameStore = useGameStore()
         const users = ref([])
         const posDifPoints = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
+        const gameID = gameStore.gameID
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -45,15 +46,15 @@ export default defineComponent({
             }
         });
 
-        console.log(auth.currentUser, 'GameID:', gameStore.gameID)
-        const userQ = query(collection(db, "user"), orderBy(`games.${gameStore.gameID}`));
+        console.log(auth.currentUser, 'GameID:', gameID)
+        const userQ = query(collection(db, "user"), orderBy(`games.${gameID}`));
         const userSnap = await getDocs(userQ);
         userSnap.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             console.log('userID: ', doc.id, " => ", doc.data());
             users.value.push(doc.data())
         });
-        console.log(users.value[0])
+        console.log(users.value[0], gameID)
 
         // Update user data ( should be a service)
         const f1Response = await api.get('https://ergast.com/api/f1/current/results.json?limit=460')
@@ -71,32 +72,31 @@ export default defineComponent({
 
         // Calculate points for each user and each race
         console.log(racePositions)
+        let test = JSON.parse(JSON.stringify(users.value[0].games[gameID]))
+        let test2 = users.value[0]
+        console.log("asdfa", test2)
         for (let userIdx = 0; userIdx < users.value.length; userIdx++) {
-            var newGuesses = users.value[userIdx].games[gameStore.gameID].guesses
+            var guessesWithPoints = users.value[userIdx].games[gameID].guesses
             var newTotPoints = 0
             for (let raceIdx = 0; raceIdx < racePositions.length; raceIdx++) {
                 // console.log(racePositions[raceIdx].indexOf(users.value[userIdx].guesses[raceIdx].guess))
-                let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].games[gameStore.gameID].guesses[raceIdx].guess) + 1 - 10)
+                let posError = Math.abs(racePositions[raceIdx].indexOf(users.value[userIdx].games[gameID].guesses[raceIdx].guess) + 1 - 10)
                 // console.log(posError)
                 if(posError < 10 ) {
-                    newGuesses[raceIdx].points = posDifPoints[posError]
+                    guessesWithPoints[raceIdx].points = posDifPoints[posError]
                     newTotPoints += posDifPoints[posError]
                 }
             }
             var userRef = doc(db, 'user', users.value[userIdx].google_id)
-            console.log('new Guesses: ', newGuesses, 'new Total Points: ', newTotPoints)
+            console.log('new Guesses: ', guessesWithPoints, 'new Total Points: ', newTotPoints)
             await updateDoc(userRef, {
-                [`games.${generatedGameID}`]: {
-                    [gameStore.gameID]: {
-                        guesses: newGuesses,
-                        total_points: newTotPoints,
-                    } 
-                },
+                [`games.${gameID}.guesses`]: guessesWithPoints,
+                [`games.${gameID}.total_points`]: newTotPoints,
             })
         }
 
 
-        return { users }
+        return { users, gameID }
     }
 })
 </script>
